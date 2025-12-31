@@ -1,107 +1,83 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import api from './services/api';
+import Navbar from './components/Navbar';
+import ProductCard from './components/ProductCard';
 import './App.css';
 
 function App() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [newItem, setNewItem] = useState({ name: '', description: '' });
+  const [searchTerm, setSearchTerm] = useState('');
 
-  // Fetch items on component mount
-  useEffect(() => {
-    fetchItems();
-  }, []);
+  // Debounce search to avoid too many API calls
+  const debounce = (func, wait) => {
+    let timeout;
+    return (...args) => {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => func(...args), wait);
+    };
+  };
 
-  const fetchItems = async () => {
+  const fetchProducts = async (search = '') => {
     try {
       setLoading(true);
-      const response = await api.get('/items');
+      const endpoint = search ? `/list?search=${encodeURIComponent(search)}` : '/list';
+      const response = await api.get(endpoint);
       setItems(response.data);
       setError(null);
     } catch (err) {
-      setError('Failed to fetch items. Make sure the server is running.');
+      setError('Failed to fetch products. Make sure the server is running.');
       console.error('Error:', err);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const response = await api.post('/items', newItem);
-      setItems([...items, response.data]);
-      setNewItem({ name: '', description: '' });
-    } catch (err) {
-      setError('Failed to create item');
-      console.error('Error:', err);
-    }
-  };
+  // Debounced search function
+  const debouncedSearch = useCallback(
+    debounce((term) => {
+      fetchProducts(term);
+    }, 300),
+    []
+  );
 
-  const handleDelete = async (id) => {
-    try {
-      await api.delete(`/items/${id}`);
-      setItems(items.filter(item => item.id !== id));
-    } catch (err) {
-      setError('Failed to delete item');
-      console.error('Error:', err);
-    }
+  // Fetch products on component mount
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  // Handle search from navbar
+  const handleSearch = (term) => {
+    setSearchTerm(term);
+    debouncedSearch(term);
   };
 
   return (
     <div className="App">
-      <header className="App-header">
-        <h1>Game Search App</h1>
-        <p>Full-Stack React + Express + MySQL</p>
-      </header>
+      <Navbar onSearch={handleSearch} />
 
       <main className="App-main">
-        {/* Add New Item Form */}
-        <section className="form-section">
-          <h2>Add New Item</h2>
-          <form onSubmit={handleSubmit}>
-            <input
-              type="text"
-              placeholder="Name"
-              value={newItem.name}
-              onChange={(e) => setNewItem({ ...newItem, name: e.target.value })}
-              required
-            />
-            <input
-              type="text"
-              placeholder="Description"
-              value={newItem.description}
-              onChange={(e) => setNewItem({ ...newItem, description: e.target.value })}
-            />
-            <button type="submit">Add Item</button>
-          </form>
-        </section>
+        {/* Results Section */}
+        <section className="products-section">
+          <div className="section-header">
+            <h2>
+              {searchTerm ? `Search results for "${searchTerm}"` : 'All Games'}
+              <span className="count">({items.length})</span>
+            </h2>
+          </div>
 
-        {/* Items List */}
-        <section className="items-section">
-          <h2>Items</h2>
-          {loading && <p>Loading...</p>}
+          {loading && <div className="loading-spinner">Loading...</div>}
           {error && <p className="error">{error}</p>}
           {!loading && !error && items.length === 0 && (
-            <p>No items found. Add one above!</p>
+            <p className="no-items">No games found. Try a different search term!</p>
           )}
-          <ul className="items-list">
+
+          <div className="products-grid">
             {items.map((item) => (
-              <li key={item.id} className="item-card">
-                <div className="item-info">
-                  <h3>{item.name}</h3>
-                  <p>{item.description}</p>
-                </div>
-                <button 
-                  className="delete-btn"
-                  onClick={() => handleDelete(item.id)}
-                >
-                  Delete
-                </button>
-              </li>
+              <ProductCard key={item.id} product={item} />
             ))}
-          </ul>
+          </div>
         </section>
       </main>
     </div>
