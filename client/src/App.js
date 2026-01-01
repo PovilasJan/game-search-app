@@ -1,46 +1,21 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import Fuse from 'fuse.js';
+import React, { useState, useEffect } from 'react';
 import api from './services/api';
 import Navbar from './components/Navbar';
 import ProductCard from './components/ProductCard';
 import './App.css';
 
 function App() {
-  const [allItems, setAllItems] = useState([]);
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
 
-  // Fuse.js configuration
-  const fuse = useMemo(() => {
-    return new Fuse(allItems, {
-      keys: ['name', 'region', 'platform'],
-      threshold: 0.3, // Lower = more strict matching
-      includeScore: true,
-      includeMatches: true,
-    });
-  }, [allItems]);
-
-  // Filter items based on search term using Fuse.js
-  const filteredItems = useMemo(() => {
-    if (!searchTerm.trim()) {
-      return allItems;
-    }
-    const results = fuse.search(searchTerm.trim());
-    return results.map(result => result.item);
-  }, [searchTerm, fuse, allItems]);
-
-  // Update displayed items when filtered items change
-  useEffect(() => {
-    setItems(filteredItems);
-  }, [filteredItems]);
-
-  const fetchProducts = async () => {
+  const fetchProducts = async (search = '') => {
     try {
       setLoading(true);
-      const response = await api.get('/list');
-      setAllItems(response.data);
+      const url = search.trim() ? `/list?search=${encodeURIComponent(search.trim())}` : '/list';
+      const response = await api.get(url);
+      setItems(response.data);
       setError(null);
     } catch (err) {
       setError('Failed to fetch products. Make sure the server is running.');
@@ -55,9 +30,10 @@ function App() {
     fetchProducts();
   }, []);
 
-  // Handle search from navbar (instant client-side search)
+  // Handle search from navbar (server-side search)
   const handleSearch = (term) => {
     setSearchTerm(term);
+    fetchProducts(term);
   };
 
   return (
