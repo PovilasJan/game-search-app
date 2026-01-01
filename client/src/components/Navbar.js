@@ -36,8 +36,11 @@ function Navbar({ onSearch }) {
       <div className="navbar-container">
         {/* Logo */}
         <div className="navbar-logo">
-          <span className="logo-icon">🎮</span>
-          <span className="logo-text">GameSearch</span>
+          <img 
+            src="https://static.eneba.games/branding/v2/logoFull.svg" 
+            alt="Logo" 
+            className="logo-img"
+          />
         </div>
 
         {/* Search Bar */}
