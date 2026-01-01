@@ -22,14 +22,19 @@ app.use(express.urlencoded({ extended: true }));
 // Serve static images
 app.use('/images', express.static(require('path').join(__dirname, '../images')));
 
+// Base URL for images
+const BASE_URL = process.env.RAILWAY_PUBLIC_DOMAIN 
+  ? `https://${process.env.RAILWAY_PUBLIC_DOMAIN}`
+  : process.env.BASE_URL || 'http://localhost:5000';
+
 // List all products (client-side search with Fuse.js)
 app.get('/list', async (req, res) => {
   try {
     const [rows] = await db.query('SELECT * FROM products ORDER BY name ASC');
-    // Add imageUrl to each product
+    // Add imageUrl to each product with full URL
     const products = rows.map(product => ({
       ...product,
-      imageUrl: product.image ? `/images/${product.image}` : null
+      imageUrl: product.image ? `${BASE_URL}/images/${product.image}` : null
     }));
     res.json(products);
   } catch (error) {
