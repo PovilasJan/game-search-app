@@ -15,42 +15,16 @@ app.use(express.urlencoded({ extended: true }));
 // Serve static images
 app.use('/images', express.static(require('path').join(__dirname, '../images')));
 
-// List all products or search with fuzzy matching
+// List all products (client-side search with Fuse.js)
 app.get('/list', async (req, res) => {
   try {
-    const { search } = req.query;
-    
-    if (search && search.trim()) {
-      // Fuzzy search using LIKE with wildcards for partial matching
-      const searchTerm = `%${search.trim()}%`;
-      const [rows] = await db.query(
-        `SELECT *, 
-          CASE 
-            WHEN name LIKE ? THEN 3
-            WHEN name LIKE ? THEN 2
-            ELSE 1
-          END as relevance
-        FROM products 
-        WHERE name LIKE ? OR region LIKE ?
-        ORDER BY relevance DESC, name ASC`,
-        [search.trim(), searchTerm, searchTerm, searchTerm]
-      );
-      // Add imageUrl to each product
-      const products = rows.map(product => ({
-        ...product,
-        imageUrl: product.image ? `/images/${product.image}` : null
-      }));
-      res.json(products);
-    } else {
-      // Return all products
-      const [rows] = await db.query('SELECT * FROM products ORDER BY id DESC');
-      // Add imageUrl to each product
-      const products = rows.map(product => ({
-        ...product,
-        imageUrl: product.image ? `/images/${product.image}` : null
-      }));
-      res.json(products);
-    }
+    const [rows] = await db.query('SELECT * FROM products ORDER BY name ASC');
+    // Add imageUrl to each product
+    const products = rows.map(product => ({
+      ...product,
+      imageUrl: product.image ? `/images/${product.image}` : null
+    }));
+    res.json(products);
   } catch (error) {
     console.error('Error fetching products:', error);
     res.status(500).json({ error: 'Failed to fetch products' });

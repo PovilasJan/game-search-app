@@ -7,33 +7,18 @@
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
     Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  background: #4518ac;
   color: #eee;
   line-height: 1.6;
   min-height: 100vh;
 }
 
-.App {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
-.App-main {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 2rem;
-  flex: 1;
-  width: 100%;
-}
-
 /* Products Section */
 .products-section {
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(10px);
+  background: #4518ac;
   padding: 1.5rem;
-  border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
 .section-header {
@@ -55,31 +40,14 @@ body {
 }
 
 .products-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  display: flex;
+  flex-wrap: wrap;
   gap: 1.5rem;
 }
 
-.search-input {
-  width: 100%;
-  padding: 1rem 1.5rem;
-  border: 2px solid rgba(255, 255, 255, 0.1);
-  border-radius: 50px;
-  font-size: 1.1rem;
-  background: rgba(255, 255, 255, 0.1);
-  color: white;
-  transition: all 0.3s;
-}
 
-.search-input::placeholder {
-  color: rgba(255, 255, 255, 0.5);
-}
 
-.search-input:focus {
-  outline: none;
-  border-color: #e94560;
-  box-shadow: 0 0 20px rgba(233, 69, 96, 0.3);
-}
+
 
 .filter-buttons {
   display: flex;
@@ -312,28 +280,6 @@ body {
 .delete-btn:hover {
   background: #ff4757;
   color: white;
-}
-
-.error {
-  color: #ff4757;
-  padding: 1rem;
-  background: rgba(255, 71, 87, 0.2);
-  border: 1px solid #ff4757;
-  border-radius: 8px;
-  margin-bottom: 1rem;
-}
-
-.no-items {
-  text-align: center;
-  color: rgba(255, 255, 255, 0.5);
-  padding: 2rem;
-}
-
-.loading-spinner {
-  text-align: center;
-  padding: 2rem;
-  color: #e94560;
-  font-size: 1.2rem;
 }
 
 /* Footer */

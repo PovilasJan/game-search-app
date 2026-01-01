@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
 import './Navbar.css';
+import { CiSearch } from "react-icons/ci";
+import { FaXmark } from "react-icons/fa6";
+import { IoCartOutline } from "react-icons/io5";
+import { CiUser } from "react-icons/ci";
+import { BsHeart } from "react-icons/bs";
 
 function Navbar({ onSearch }) {
   const [searchValue, setSearchValue] = useState('');
-  const [language, setLanguage] = useState('EN');
-  const [currency, setCurrency] = useState('EUR');
 
   const handleSearchChange = (e) => {
     const value = e.target.value;
@@ -21,6 +24,13 @@ function Navbar({ onSearch }) {
     }
   };
 
+  const handleClearSearch = () => {
+    setSearchValue('');
+    if (onSearch) {
+      onSearch('');
+    }
+  };
+
   return (
     <nav className="navbar">
       <div className="navbar-container">
@@ -32,6 +42,7 @@ function Navbar({ onSearch }) {
 
         {/* Search Bar */}
         <form className="navbar-search" onSubmit={handleSearchSubmit}>
+          <CiSearch className="search-icon-left" />
           <input
             type="text"
             className="search-input"
@@ -39,57 +50,34 @@ function Navbar({ onSearch }) {
             value={searchValue}
             onChange={handleSearchChange}
           />
-          <button type="submit" className="search-btn">
-            🔍
-          </button>
+          {searchValue && (
+            <button type="button" className="clear-btn" onClick={handleClearSearch}>
+              <FaXmark />
+            </button>
+          )}
         </form>
+
+        {/* Region/Currency Info */}
+        <div className="region-info">
+          <span className="flag-round">🇱🇹</span>
+          <span className="region-text">EU | EUR</span>
+        </div>
 
         {/* Right Side Actions */}
         <div className="navbar-actions">
-          {/* Language Selector */}
-          <div className="nav-item language">
-            <button
-              className={`lang-btn ${language === 'EN' ? 'active' : ''}`}
-              onClick={() => setLanguage('EN')}
-              title="English"
-            >
-              <span className="flag">🇬🇧</span>
-            </button>
-            <button
-              className={`lang-btn ${language === 'LT' ? 'active' : ''}`}
-              onClick={() => setLanguage('LT')}
-              title="Lithuanian"
-            >
-              <span className="flag">🇱🇹</span>
-            </button>
-          </div>
-
-          {/* Currency Selector */}
-          <div className="nav-item currency">
-            <select
-              className="currency-select"
-              value={currency}
-              onChange={(e) => setCurrency(e.target.value)}
-            >
-              <option value="EUR">€ EUR</option>
-              <option value="USD">$ USD</option>
-              <option value="GBP">£ GBP</option>
-            </select>
-          </div>
-
           {/* Wishlist */}
           <button className="nav-icon-btn wishlist" title="Wishlist">
-            ❤️
+            <BsHeart />
           </button>
 
           {/* Cart */}
           <button className="nav-icon-btn cart" title="Cart">
-            🛒
+            <IoCartOutline />
           </button>
 
           {/* Account */}
           <button className="nav-icon-btn account" title="Account">
-            👤
+            <CiUser />
           </button>
         </div>
       </div>
