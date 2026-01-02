@@ -61,6 +61,19 @@
   font-size: 1.2rem;
 }
 
+.cashback-badge {
+  position: absolute;
+  bottom: 40px;
+  left: 0;
+  background: linear-gradient(135deg, #00c853 0%, #00e676 100%);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.3rem 0.6rem;
+  border-radius: 0 4px 4px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
 
 
 /* Price section with consistent spacing */
